@@ -1,5 +1,8 @@
 import pandas as pd 
 import matplotlib. pyplot as plt 
+from openpyxl import Workbook
+from openpyxl.chart import BarChart, Reference
+from openpyxl.utils.dataframe import dataframe_to_rows
 
 def main_menu():
     print("\n------- Student Management System -------\n")
@@ -7,6 +10,7 @@ def main_menu():
     print("2. Student Data Analysis")
     print("3. Student Data Visualization")
     print("4. Exit")
+	print("5. Export to Excel with Charts")
 
 def create_dataframe_menu():
     print("\n------- Create Data frame -------\n")
@@ -117,6 +121,36 @@ while True:
         # Exit
         print("Bye ...")
         exit()
+	elif ch == 5:
+    from openpyxl import Workbook
+    from openpyxl.chart import BarChart, Reference
+    from openpyxl.utils.dataframe import dataframe_to_rows
+
+    file_name = input("Enter Excel file name (e.g. students.xlsx): ")
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Student Data"
+
+    for row in dataframe_to_rows(df, index=False, header=True):
+        ws.append(row)
+
+    chart = BarChart()
+    chart.title = "Student Marks"
+    chart.x_axis.title = "Students"
+    chart.y_axis.title = "Marks"
+
+    data = Reference(ws, min_col=8, min_row=1, max_row=len(df)+1)
+    cats = Reference(ws, min_col=2, min_row=2, max_row=len(df)+1)
+
+    chart.add_data(data, titles_from_data=True)
+    chart.set_categories(cats)
+
+    ws.add_chart(chart, "J2")
+
+    wb.save(file_name)
+
+    print("Excel file with chart created successfully!")
     else:
         # Error Display and Exit
         print("Error! Wrong option selected. ")
